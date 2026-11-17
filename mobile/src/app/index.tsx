@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import FormularioRelato from '@/components/formulario-relato';
+import PrevisaoChuva from '@/components/previsao-chuva';
 
 type Alerta = {
   pontoId: number;
@@ -52,12 +53,13 @@ export default function HomeScreen() {
     let requisicao: AbortController | undefined;
 
     async function atualizar() {
-      requisicao = new AbortController();
-      limite = setTimeout(() => requisicao?.abort(), 4000);
+      const controller = new AbortController();
+      requisicao = controller;
+      limite = setTimeout(() => controller.abort(), 4000);
 
       try {
         const resposta = await fetch(`${API_URL}/api/alertas`, {
-          signal: requisicao.signal,
+          signal: controller.signal,
           headers: { Accept: 'application/json' },
           cache: 'no-store',
         });
@@ -79,7 +81,7 @@ export default function HomeScreen() {
         }
       } catch {
         if (ativo) {
-          // Mantém os últimos dados recebidos na tela.
+          // Preserva os últimos dados enquanto tenta reconectar.
           setConexao('offline');
         }
       } finally {
@@ -117,7 +119,7 @@ export default function HomeScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.selo}>
-          PROJETO ACADÊMICO • DADOS SIMULADOS
+          PROJETO ACADÊMICO • PONTOS E SENSORES SIMULADOS
         </Text>
 
         <Text style={styles.titulo}>Cota de Rua</Text>
@@ -141,7 +143,7 @@ export default function HomeScreen() {
           <Text style={styles.texto}>
             {offline
               ? 'Tentando reconectar. Os dados abaixo podem estar desatualizados.'
-              : 'Consulta automática a cada 5 segundos.'}
+              : 'Consulta dos alertas a cada 5 segundos após a resposta.'}
           </Text>
 
           <Text style={styles.detalhe}>
@@ -167,6 +169,8 @@ export default function HomeScreen() {
             </Text>
           </View>
         </View>
+
+        <PrevisaoChuva />
 
         <FormularioRelato
           pontos={alertas}
