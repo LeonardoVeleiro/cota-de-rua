@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import FormularioRelato from '@/components/formulario-relato';
+
 type Alerta = {
   pontoId: number;
   nomePonto: string;
@@ -103,15 +105,23 @@ export default function HomeScreen() {
   }, []);
 
   const offline = conexao === 'offline';
+
   const criticos = alertas.filter(
     (alerta) => alerta.classificacao === 'CRITICO'
   ).length;
 
   return (
     <SafeAreaView style={styles.tela}>
-      <ScrollView contentContainerStyle={styles.conteudo}>
-        <Text style={styles.selo}>PROJETO ACADÊMICO • DADOS SIMULADOS</Text>
+      <ScrollView
+        contentContainerStyle={styles.conteudo}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.selo}>
+          PROJETO ACADÊMICO • DADOS SIMULADOS
+        </Text>
+
         <Text style={styles.titulo}>Cota de Rua</Text>
+
         <Text style={styles.subtitulo}>
           Acompanhe os pontos de alagamento do bairro.
         </Text>
@@ -152,11 +162,20 @@ export default function HomeScreen() {
             <Text style={[styles.numero, { color: '#B42318' }]}>
               {criticos}
             </Text>
-            <Text style={styles.texto}>Críticos no último registro</Text>
+            <Text style={styles.texto}>
+              Críticos no último registro
+            </Text>
           </View>
         </View>
 
-        <Text style={styles.secao}>Prioridade de acompanhamento</Text>
+        <FormularioRelato
+          pontos={alertas}
+          offline={conexao !== 'online'}
+        />
+
+        <Text style={styles.secao}>
+          Prioridade de acompanhamento
+        </Text>
 
         {conexao === 'conectando' && (
           <ActivityIndicator size="large" color="#115E59" />
@@ -182,12 +201,21 @@ export default function HomeScreen() {
           return (
             <View
               key={alerta.pontoId}
-              style={[styles.cartao, { borderLeftColor: categoria.cor }]}
+              style={[
+                styles.cartao,
+                { borderLeftColor: categoria.cor },
+              ]}
             >
               <View style={styles.linha}>
-                <Text style={[styles.classificacao, { color: categoria.cor }]}>
+                <Text
+                  style={[
+                    styles.classificacao,
+                    { color: categoria.cor },
+                  ]}
+                >
                   {categoria.nome}
                 </Text>
+
                 <Text style={styles.detalhe}>
                   {alerta.pontuacao} pontos
                 </Text>
@@ -214,17 +242,22 @@ export default function HomeScreen() {
 
               <View style={styles.fonte}>
                 <Text style={styles.detalhe}>
-                  Origem: {alerta.origem === 'SENSOR_SIMULADO'
+                  Origem:{' '}
+                  {alerta.origem === 'SENSOR_SIMULADO'
                     ? 'Sensor simulado'
                     : alerta.origem || 'Sem registro'}
                 </Text>
+
                 <Text style={styles.detalhe}>
-                  Confiança: {alerta.confianca === null
+                  Confiança:{' '}
+                  {alerta.confianca === null
                     ? 'não informada'
                     : `${alerta.confianca}/100 — pontuação do protótipo`}
                 </Text>
+
                 <Text style={styles.detalhe}>
-                  Medição: {alerta.horario
+                  Medição:{' '}
+                  {alerta.horario
                     ? new Date(alerta.horario).toLocaleString('pt-BR')
                     : 'não recebida'}
                 </Text>
@@ -243,7 +276,10 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  tela: { flex: 1, backgroundColor: '#F3F6F4' },
+  tela: {
+    flex: 1,
+    backgroundColor: '#F3F6F4',
+  },
   conteudo: {
     width: '100%',
     maxWidth: 800,
@@ -258,19 +294,45 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
-  titulo: { color: '#142D29', fontSize: 36, fontWeight: '800' },
-  subtitulo: { color: '#475569', fontSize: 16, lineHeight: 24 },
+  titulo: {
+    color: '#142D29',
+    fontSize: 36,
+    fontWeight: '800',
+  },
+  subtitulo: {
+    color: '#475569',
+    fontSize: 16,
+    lineHeight: 24,
+  },
   conexao: {
     backgroundColor: '#DCFCE7',
     borderRadius: 16,
     padding: 18,
     gap: 8,
   },
-  semConexao: { backgroundColor: '#FEF3C7' },
-  conexaoTitulo: { color: '#1E293B', fontSize: 16, fontWeight: '700' },
-  texto: { color: '#334155', fontSize: 14, lineHeight: 21 },
-  detalhe: { color: '#475569', fontSize: 12, lineHeight: 19 },
-  resumo: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
+  semConexao: {
+    backgroundColor: '#FEF3C7',
+  },
+  conexaoTitulo: {
+    color: '#1E293B',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  texto: {
+    color: '#334155',
+    fontSize: 14,
+    lineHeight: 21,
+  },
+  detalhe: {
+    color: '#475569',
+    fontSize: 12,
+    lineHeight: 19,
+  },
+  resumo: {
+    flexDirection: 'row',
+    gap: 12,
+    flexWrap: 'wrap',
+  },
   indicador: {
     flex: 1,
     minWidth: 130,
@@ -279,8 +341,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     gap: 6,
   },
-  numero: { color: '#115E59', fontSize: 32, fontWeight: '800' },
-  secao: { color: '#142D29', fontSize: 20, fontWeight: '700', marginTop: 8 },
+  numero: {
+    color: '#115E59',
+    fontSize: 32,
+    fontWeight: '800',
+  },
+  secao: {
+    color: '#142D29',
+    fontSize: 20,
+    fontWeight: '700',
+    marginTop: 8,
+  },
   cartao: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
@@ -293,10 +364,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  classificacao: { fontSize: 14, fontWeight: '800' },
-  nome: { color: '#142D29', fontSize: 20, fontWeight: '700' },
-  nivel: { color: '#142D29', fontSize: 30, fontWeight: '800', marginVertical: 4 },
-  aviso: { color: '#92400E', fontSize: 13, fontWeight: '700', lineHeight: 20 },
+  classificacao: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  nome: {
+    color: '#142D29',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  nivel: {
+    color: '#142D29',
+    fontSize: 30,
+    fontWeight: '800',
+    marginVertical: 4,
+  },
+  aviso: {
+    color: '#92400E',
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 20,
+  },
   fonte: {
     borderTopWidth: 1,
     borderTopColor: '#E2E8F0',
@@ -304,5 +392,10 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     gap: 3,
   },
-  rodape: { color: '#64748B', fontSize: 12, textAlign: 'center', lineHeight: 20 },
+  rodape: {
+    color: '#64748B',
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
 });
