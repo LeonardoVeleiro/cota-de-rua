@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import FormularioRelato from '@/components/formulario-relato';
 import PrevisaoChuva from '@/components/previsao-chuva';
+import AvisoCritico from '@/components/aviso-critico';
 
 type Alerta = {
   pontoId: number;
@@ -170,7 +171,8 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <PrevisaoChuva />
+        <AvisoCritico alertas={alertas} online={conexao === 'online'} />
+<PrevisaoChuva />
 
         <FormularioRelato
           pontos={alertas}
